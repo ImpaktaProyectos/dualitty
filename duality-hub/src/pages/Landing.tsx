@@ -53,6 +53,7 @@ function LandingView({ rawData }: { rawData: any }) {
       }
       if (link.href !== href) link.href = href;
     }
+    if (s.event_name) document.title = s.event_name;
   }, [s]);
 
   const atmosphere = (data as any).atmosphere ?? null;
@@ -103,6 +104,10 @@ function LandingView({ rawData }: { rawData: any }) {
                 decoding="sync"
               />
 
+            ) : s?.event_name && s.event_name.toUpperCase() !== "DUALITY" ? (
+              <span className="text-display text-2xl font-black tracking-widest uppercase">
+                {s.event_name}
+              </span>
             ) : (
               <span className="text-display text-2xl font-black tracking-widest">
                 DUA<span style={{ color: "var(--brand-red)" }}>L</span><span style={{ color: "var(--brand-blue)" }}>I</span>TY
@@ -217,7 +222,7 @@ function LandingView({ rawData }: { rawData: any }) {
               <SectionBackground cfg={sectionBg("gallery")} />
               <div className="relative max-w-7xl mx-auto">
                 <SectionLabel>Galería</SectionLabel>
-                <h2 className="text-display text-4xl md:text-6xl font-black mb-10">Momentos DUALITY</h2>
+                <h2 className="text-display text-4xl md:text-6xl font-black mb-10">Momentos {s?.event_name ?? "DUALITY"}</h2>
                 <GalleryDisplay items={data.gallery as any} layout={s?.gallery_layout} />
               </div>
             </section>
@@ -321,6 +326,8 @@ function LandingView({ rawData }: { rawData: any }) {
                       className="object-contain"
                       style={{ height: `${s?.header_logo_height ?? 48}px` }}
                     />
+                  ) : s?.event_name && s.event_name.toUpperCase() !== "DUALITY" ? (
+                    <span className="uppercase">{s.event_name}</span>
                   ) : (
                     <>DUA<span style={{ color: "var(--brand-red)" }}>L</span><span style={{ color: "var(--brand-blue)" }}>I</span>TY</>
                   )}
