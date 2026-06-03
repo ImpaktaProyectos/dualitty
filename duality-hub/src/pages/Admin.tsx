@@ -88,6 +88,8 @@ export default function AdminPage() {
                 className="object-contain shrink-0"
                 style={{ height: "24px" }}
               />
+            ) : data?.settings?.event_name && data.settings.event_name.toUpperCase() !== "DUALITY" ? (
+              <span className="shrink-0 uppercase">{data.settings.event_name}</span>
             ) : (
               <span className="shrink-0">DUA<span style={{ color: "var(--brand-red)" }}>L</span><span style={{ color: "var(--brand-blue)" }}>I</span>TY</span>
             )}

@@ -134,7 +134,12 @@ const PRESETS: Preset[] = [
 
 const TEXTURES = ["none", "noise", "grid", "scanlines", "vignette", "light-beams"];
 const MOTIONS = ["none", "particles", "pulse-glow", "gradient-shift", "light-sweep"];
-const BG_TYPES = ["solid", "gradient", "image", "video"];
+const BG_TYPE_OPTIONS: { value: string; label: string; hint: string }[] = [
+  { value: "solid",    label: "Color sólido", hint: "Un color plano." },
+  { value: "gradient", label: "Degradado",    hint: "Dos colores mezclados." },
+  { value: "image",    label: "Imagen",       hint: "Sube una foto de fondo." },
+  { value: "video",    label: "Vídeo",        hint: "Sube un vídeo de fondo." },
+];
 
 const SECTION_KEYS = [
   { key: "hero", label: "Hero" },
@@ -378,11 +383,36 @@ function AtmosphereFields({
 
       <section className="rounded-2xl border border-white/10 bg-[var(--dark-panel)] p-5 space-y-4">
         <h3 className="text-sm uppercase tracking-widest text-white/60">Capa base</h3>
+        <div>
+          <label className="text-xs uppercase tracking-widest text-white/50">Tipo de fondo</label>
+          <div className="mt-2 grid grid-cols-2 lg:grid-cols-4 gap-2">
+            {BG_TYPE_OPTIONS.map((opt) => {
+              const active = bgType === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => set("background_type", opt.value)}
+                  className={`text-left rounded-xl border p-3 transition-colors ${
+                    active ? "border-[var(--brand-blue)] bg-[var(--brand-blue)]/10" : "border-white/10 hover:border-white/30"
+                  }`}
+                >
+                  <div className="font-bold text-sm">{opt.label}</div>
+                  <div className="text-[11px] text-white/50 mt-1 leading-snug">{opt.hint}</div>
+                </button>
+              );
+            })}
+          </div>
+          {(bgType === "image" || bgType === "video") && (
+            <p className="mt-2 text-[11px] text-white/50">
+              Sube tu archivo abajo. Se aplicará al guardar.
+            </p>
+          )}
+        </div>
         <div className="grid md:grid-cols-2 gap-4">
-          <Select label="Tipo de fondo" value={bgType} options={BG_TYPES} onChange={(v) => set("background_type", v)} />
-          <Color label="Color base" value={values.background_color} onChange={(v) => set("background_color", v)} />
+          <Color label={bgType === "gradient" ? "Color base (degradado)" : "Color base"} value={values.background_color} onChange={(v) => set("background_color", v)} />
           {bgType === "gradient" && (
-            <Color label="Color secundario (gradiente)" value={values.background_secondary_color} onChange={(v) => set("background_secondary_color", v)} />
+            <Color label="Color secundario (degradado)" value={values.background_secondary_color} onChange={(v) => set("background_secondary_color", v)} />
           )}
         </div>
 
