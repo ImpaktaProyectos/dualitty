@@ -18,6 +18,8 @@ import { SectionsReorder } from "@/components/admin/SectionsReorder";
 import { StagesManager } from "@/components/admin/StagesManager";
 import { BulkScheduleImporter } from "@/components/admin/BulkScheduleImporter";
 import { ArtistsScheduleMatrix } from "@/components/admin/ArtistsScheduleMatrix";
+import { ErrorModeToggle, ErrorModeBanner } from "@/components/admin/ErrorModeToggle";
+import { withoutErrorMode } from "@/lib/error-mode";
 
 
 const TABS = [
@@ -96,6 +98,7 @@ export default function AdminPage() {
             <span className="hidden md:inline text-white/40 text-xs ml-2 font-normal tracking-normal truncate">Panel del organizador</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            {data && <ErrorModeToggle sections={(data.sections ?? []) as any} onSaved={refresh} />}
             <a
               href="/"
               target="_blank"
@@ -109,6 +112,8 @@ export default function AdminPage() {
             </button>
           </div>
         </div>
+
+        {data && <ErrorModeBanner sections={(data.sections ?? []) as any} />}
 
         {/* Mobile: compact select navigator */}
         <div className="md:hidden px-3 pb-2">
@@ -183,7 +188,7 @@ export default function AdminPage() {
                 onSaved={refresh}
               />
             )}
-            {tab === "sections" && <SectionsReorder rows={data.sections as any} onSaved={refresh} />}
+            {tab === "sections" && <SectionsReorder rows={withoutErrorMode(data.sections as any) as any} onSaved={refresh} />}
             {tab === "stages" && <StagesManager rows={(data as any).stages ?? []} onSaved={refresh} />}
             {tab === "artists" && (
               <div className="space-y-6">

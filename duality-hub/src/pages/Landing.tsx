@@ -7,6 +7,9 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { SectionBackground, resolveSectionBg } from "@/components/SectionBackground";
 import { GalleryDisplay } from "@/components/GalleryDisplay";
 import { ShopSection } from "@/components/ShopSection";
+import { ErrorScreen } from "@/components/ErrorScreen";
+import { isErrorModeOn, withoutErrorMode } from "@/lib/error-mode";
+import { useAuth } from "@/lib/auth";
 
 
 
@@ -1156,7 +1159,20 @@ function timeOrder(t: string): number {
 
 
 export default function Landing() {
-  const { data, isLoading } = useQuery({ queryKey: ["landing"], queryFn: getLandingData });
+  const { session } = useAuth();
+  const { data, isLoading } = useQuery({
+    queryKey: ["landing"],
+    queryFn: getLandingData,
+    // Mientras el modo error está activo, comprobamos cada 20 s: en cuanto se
+    // desactive desde el panel, la web vuelve sola para quien la tenga abierta.
+    refetchInterval: (q) => (isErrorModeOn((q.state.data as any)?.sections) ? 20000 : false),
+  });
   if (isLoading || !data) return <div className="min-h-screen bg-[#08080c]" />;
-  return <LandingView rawData={data} />;
+
+  // Un admin con sesión puede ver la web real con /?preview aunque el 404 esté activo.
+  const adminPreview = !!session && new URLSearchParams(window.location.search).has("preview");
+  if (isErrorModeOn(data.sections) && !adminPreview) {
+    return <ErrorScreen settings={data.settings as any} />;
+  }
+  return <LandingView rawData={{ ...data, sections: withoutErrorMode(data.sections) }} />;
 }
